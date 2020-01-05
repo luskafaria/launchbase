@@ -56,6 +56,8 @@ module.exports = {
   },
   async post(req, res) {
 
+    console.log('cheguei no productsController.post');
+    
     const keys = Object.keys(req.body);
 
     for (key of keys) {
@@ -68,8 +70,10 @@ module.exports = {
       return res.send('Please, send at least one image')
     }
 
+    req.body.user_id = req.session.userId
+
     let results = await Product.create(req.body);
-    const productId = results.rows[0].id;
+    const productId = results.rows[0].id;    
 
     const filesPromise = req.files.map(file => File.create({
       ...file,
@@ -155,6 +159,8 @@ module.exports = {
 
   },
   async delete(req, res) {
+    console.log(req.body);
+    
     await Product.delete(req.body.id)
 
     return res.redirect('/products/create')

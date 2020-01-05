@@ -1,4 +1,3 @@
-
 <div class="item">
   <div>Nome completo</div>
   <div>
@@ -9,45 +8,70 @@
 <div class="item">
   <div>e-mail</div>
   <div class='input'>
-    <input type="email" name="email" placeholder="Digite o seu email" value="{{ user.email }}" onblur="Validate.apply(this, 'isEmail')">
+    <input type="email" name="email" placeholder="Digite o seu email" value="{{ user.email }}" onblur="Validate.apply(this, 'isEmail')" required="required">
   </div>
 </div>
 
 <div class="item">
   <div>Senha</div>
   <div class='input'>
-    <input type="password" name="password" placeholder="Digite uma senha segura" value="{{ user.password }}">
+    <input
+    type="password"
+    name="password"
+    {% if not user.id %}
+    placeholder="Digite uma senha segura"
+    {% else %}
+    placeholder="Digite sua senha para atualizar seu cadastro"
+    {% endif %}
+    required="required">
   </div>
 </div>
 
 {% if not user.id %}
 
-<div class="item">
-  <div>Repita sua senha</div>
-  <div class='input'>
-    <input type="password" name="passwordRepeat" placeholder="Digite sua senha novamente">
+  <div class="item">
+    <div>Repita sua senha</div>
+    <div class='input'>
+      <input type="password" name="passwordRepeat" placeholder="Digite sua senha novamente" required="required">
+    </div>
   </div>
-</div>
 
 {% endif %}
 
 <div class="item">
   <div>CPF ou CNPJ</div>
   <div>
-    <input type="text" name="cpf_cnpj" placeholder="Digite seu documento" value='{{user.cpf_cnpj}}' onkeydown="Mask.apply(this, 'cpfCnpj')">
+    <input type="text" name="cpf_cnpj" placeholder="Digite seu documento" value='{{user.cpf_cnpj}}' onkeydown="Mask.apply(this, 'cpfCnpj')" onblur="Validate.apply(this, 'isCpfCnpj')" required="required">
   </div>
 </div>
 
-<div class="item">
-  <div>CEP</div>
-  <div>
-    <input type="text" name="cep" placeholder="33333-333" value='{{user.cep}}' onkeydown="Mask.apply(this, 'cep')">
-  </div>
-</div>
-
-<div class="item">
+<div class="item address">
   <div>Endereço completo</div>
   <div>
-    <input type="text" name="address" placeholder="Digite seu endereço completo" value='{{user.adress}}'>
+    <input type="text" name="cep" placeholder="CEP 32121-321" value='{{user.cep}}' onkeydown="Mask.apply(this, 'cep')" onblur="Validate.apply(this, 'isCep'), Cep.pesquisaCep(this.value)">
+  </div>
+  <div class="street">
+    <div>
+      <input id='street' type="text" name="street" placeholder="Logradouro" value='{{user.street}}'>
+    </div>
+    <div>
+      <input id='street_number' type="text" name="street_number" placeholder="Nº" value='{{user.street_number}}'>
+    </div>
+  </div>
+  <div class="complement">
+    <div>
+      <input id='complement' type="text" name="complement" placeholder="Complemento" value='{{user.complement}}'>
+    </div>
+    <div>
+      <input id='neighborhood' type="text" name="neighborhood" placeholder="Bairro" value='{{user.neighborhood}}'>
+    </div>
+  </div>
+  <div class="city">
+    <div>
+      <input id='state' type="text" name="state" placeholder="Estado" value='{{user.state}}'>
+    </div>
+    <div>
+      <input id='city' type="text" name="city" placeholder="Cidade" value='{{user.city}}'>
+    </div>
   </div>
 </div>

@@ -1,4 +1,3 @@
-@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap";
 
 :root {
   --primary-color: #fd951f;
@@ -214,6 +213,24 @@ form .item select {
   border: 1px solid #EFEFEF;
   border-radius: 4px;
   font-size: 16px;
+}
+
+form .item.address input{
+  margin-bottom: 8px;
+}
+
+form .item .street,
+form .item .complement,
+form .item .city {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 8px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+form .item .street {
+  grid-template-columns: 3fr 1fr;
 }
 
 form .item select {
@@ -601,7 +618,7 @@ form .item #images-preview .image:hover i {
 } */
 
 /* validate-errors */ 
-.input .error {
+.item .error {
   background-color: #e74c3c;
   margin: 8px 0;
   padding: 4px;

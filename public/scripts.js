@@ -56,7 +56,7 @@ const ButtonPreventDefault = {
   },
   delete(event) {
 
-    const confirmation = confirm("Você deseja realizar essa exclusão?")
+    const confirmation = confirm("Você realmente deseja realizar essa exclusão?")
     if (!confirmation) {
       event.preventDefault()
     }
@@ -237,7 +237,7 @@ const Validate = {
   },
   clearErrors(input) {
     const errorDiv = input.parentNode.querySelector('.error')
-    if (errorDiv) 
+    if (errorDiv)
       errorDiv.remove()
   },
   isEmail(value) {
@@ -251,6 +251,101 @@ const Validate = {
       error,
       value
     }
+  },
+  isCpfCnpj(value) {
+    let error = null
+
+    const cleanValues = value.replace(/\D/g, "")
+
+    if (cleanValues.length > 12 && cleanValues.length !== 14) {
+      error = 'CNPJ incorreto'
+    } else if (cleanValues.length < 12 && cleanValues.length !== 11) {
+      error = 'CPF incorreto'
+    }
+    return {
+      error,
+      value
+    }
+  },
+  isCep(value) {
+    let error = null
+
+    const cleanValues = value.replace(/\D/g, "")
+
+    if (cleanValues.length !== 8) {
+      error = 'CEP incorreto'
+    }
+
+    return {
+      error,
+      value
+    }
   }
 
+}
+
+const Cep = {
+  pesquisaCep(value) {
+    //Nova constiável "cep" somente com dígitos.
+    const cep = value.replace(/\D/g, '');
+
+    //Verifica se campo cep possui valor informado.
+    if (cep != "") {
+
+      //Expressão regular para validar o CEP.
+      const validacep = /^[0-9]{8}$/;
+
+      //Valida o formato do CEP.
+      if (validacep.test(cep)) {
+
+        //Preenche os campos com "..." enquanto consulta webservice.
+        document.getElementById('street').value = "...";
+        document.getElementById('neighborhood').value = "...";
+        document.getElementById('city').value = "...";
+        document.getElementById('state').value = "...";
+
+        //Cria um elemento javascript.
+        const script = document.createElement('script');
+
+        //Sincroniza com o callback.
+        script.src = 'https://viacep.com.br/ws/' + cep + '/json/?callback=Cep.meu_callback';
+
+        //Insere script no documento e carrega o conteúdo.
+        document.body.appendChild(script);
+
+      } //end if.
+      else {
+        //cep é inválido.
+        Cep.limpa_formulário_cep();
+        alert("Formato de CEP inválido.");
+      }
+    } //end if.
+    else {
+      //cep sem valor, limpa formulário.
+      Cep.limpa_formulário_cep();
+    }
+  },
+  limpa_formulário_cep() {
+    //Limpa valores do formulário de cep.
+    document.getElementById('street').value = ("");
+    document.getElementById('neighborhood').value = ("");
+    document.getElementById('city').value = ("");
+    document.getElementById('state').value = ("");
+    document.getElementById('street_number').value = ("");
+  },
+  meu_callback(result) {
+    if (!("erro" in result)) {
+      //Atualiza os campos com os valores.
+      document.getElementById('street').value=(result.logradouro);
+      document.getElementById('neighborhood').value=(result.bairro);
+      document.getElementById('city').value=(result.localidade);
+      document.getElementById('state').value=(result.uf);
+  } //end if.
+  else {
+      //CEP não Encontrado.
+      Cep.limpa_formulário_cep();
+      alert("CEP não encontrado.");
+  }
+  }
+  
 }
