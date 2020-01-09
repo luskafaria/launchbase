@@ -11,7 +11,7 @@ module.exports = {
       password
     } = req.body
 
-    const user = await User.findOne({
+    let user = await User.findOne({
       where: {
         email
       }
