@@ -44,7 +44,7 @@ module.exports = {
       }
     })
     if (user) return res.render('users/register.njk', {
-      user: body,
+      user: req.body,
       error: 'Usuário já cadastrado.'
     })
 
@@ -96,6 +96,7 @@ module.exports = {
       error: 'Informe sua senha para atualizar o seu cadastro.'
     })
 
+    
     const user = await User.findOne({
       where: {
         id
@@ -103,13 +104,14 @@ module.exports = {
     })
 
     const passed = await compare(password, user.password)
+
     if (!passed) return res.render('users/index', {
       user: req.body,
       error: 'Senha incorreta.'
     })
 
     req.user = user
-    
+
     next()
   }
 }

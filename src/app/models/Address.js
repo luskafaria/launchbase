@@ -1,9 +1,11 @@
+
 const Base = require('./Base')
 
 Base.init({
-  table: 'categories'
+  table: 'address'
 })
 
+
 module.exports = {
-  ...Base,
+  ...Base,  
 }

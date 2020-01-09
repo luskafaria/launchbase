@@ -1,8 +1,21 @@
-const User = require('../models/User')
 const {
-  formatCep,
+  unlinkSync
+} = require('fs')
+
+const {
+  hash
+} = require('bcryptjs')
+
+const LoadProductService = require('../services/LoadProductService')
+const User = require('../models/User')
+const Product = require('../models/Product')
+
+const Address = require('../models/Address')
+
+const {
   formatCpfCnpj
 } = require('../../lib/utils')
+
 
 module.exports = {
 
@@ -11,30 +24,68 @@ module.exports = {
     return res.render('users/register')
   },
   async show(req, res) {
+    try {
 
-    const {
-      user
-    } = req
+      const {
+        user
+      } = req
 
-    user.cpf_cnpj = formatCpfCnpj(user.cpf_cnpj)
-    user.cep = formatCep(user.cep)
+      user.cpf_cnpj = formatCpfCnpj(user.cpf_cnpj)
 
-    return res.render('users/index', {
-      user
-    })
+      return res.render('users/index', {
+        user
+      })
+    } catch (err) {
+      console.error(err);
+
+    }
   },
   async post(req, res) {
     try {
-      const userId = await User.create(req.body)
+
+      let {
+        name,
+        email,
+        password,
+        cpf_cnpj
+      } = req.body
+
+      password = await hash(password, 8)
+      cpf_cnpj = cpf_cnpj.replace(/\D/g, "")
+
+      const userId = await User.create({
+        name,
+        email,
+        password,
+        cpf_cnpj
+      })
 
       req.session.userId = userId
 
-      let newUserAddress = {
-        ...req.body,
-        user_id: userId
-      }
+      let {
+        cep,
+        street,
+        street_number,
+        complement,
+        neighborhood,
+        city,
+        state,
+        status
+      } = req.body
 
-      const address = await User.createAddress(newUserAddress)
+      cep = cep.replace(/\D/g, "")
+
+      await Address.create({
+        cep,
+        street,
+        street_number,
+        complement,
+        neighborhood,
+        city,
+        state,
+        status: 1,
+        user_id: userId
+      })
 
       return res.redirect('/users')
     } catch (err) {
@@ -46,6 +97,8 @@ module.exports = {
       const {
         user
       } = req
+
+      console.log(user);
 
       let {
         name,
@@ -67,7 +120,7 @@ module.exports = {
         name,
         email,
         cpf_cnpj
-      }).then(await User.updateAddress(user.id, {
+      }).then(await Address.update(user.id, {
         cep,
         street,
         street_number,
@@ -91,18 +144,51 @@ module.exports = {
   },
   async delete(req, res) {
     try {
+
+      const products = await Product.findAll({
+        where: {
+          user_id: req.body.id
+        }
+      })
+
+      //pegar todas as imagens
+      const allFilesPromise = products.map(product =>
+        Product.files(product.id))
+
+      let promiseResults = await Promise.all(allFilesPromise)
+
+      //rodar a remoção do usuário
       await User.delete(req.body.id)
       req.session.destroy()
 
-      return res.render('session/login', {
-        success: 'Conta deletada com sucesso.'
+
+
+      //remover as imagens da pasta public
+      promiseResults.map(files => {
+        files.map(file => {
+          try {
+            unlinkSync(file.path)
+          } catch (err) {
+            console.error(err);
+          }
+        })
       })
+
+      return res.redirect('/users/login')
     } catch (err) {
       console.error(err);
-      return res.render('users/index', {
-        user,
-        error: 'Erro ao deletar sua conta.'
+      return res.render('session/login', {
+        success: 'Erro ao deletar sua conta!'
       })
     }
+  },
+  async ads(req, res) {
+    const products = await LoadProductService.load('products', {
+      where: {
+        user_id: req.session.userId
+      }
+    })
+
+    return res.render('users/ads', {products})
   }
 }
