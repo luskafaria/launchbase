@@ -2,7 +2,6 @@ const {
   formatPrice
 } = require('./utils')
 
-// carrinho guardado na sessao (req.session)
 const Cart = {
   init(oldCart) {
     if (oldCart) {
@@ -20,10 +19,8 @@ const Cart = {
     return this
   },
   addOne(product) {
-    //ver se o produto já está no carrinho
-    const inCart = this.getCartItem(product.id)
+    let inCart = this.getCartItem(product.id)
 
-    //se não existe
     if (!inCart) {
       inCart = {
         product: {
@@ -31,18 +28,19 @@ const Cart = {
           formattedPrice: formatPrice(product.price)
         },
         quantity: 0,
+        price: 0,
         formattedPrice: formatPrice(0)
       }
 
       this.items.push(inCart)
     }
-    //max quantity
+
     if (inCart.quantity >= product.quantity) return this
-    //update item
+
     inCart.quantity++
     inCart.price = inCart.product.price * inCart.quantity
     inCart.formattedPrice = formatPrice(inCart.price)
-    //update cart
+
     this.total.quantity++
     this.total.price += inCart.product.price
     this.total.formattedPrice = formatPrice(this.total.price)
@@ -54,12 +52,10 @@ const Cart = {
 
     if (!inCart) return this
 
-    //atualizar o item
     inCart.quantity--
     inCart.price = inCart.product.price * inCart.quantity
     inCart.formattedPrice = formatPrice(inCart.price)
 
-    //atualizar o carrinho
     this.total.quantity--
     this.total.price -= inCart.product.price
     this.total.formattedPrice = formatPrice(this.total.price)
@@ -72,12 +68,13 @@ const Cart = {
     }
 
     return this
+
   },
   delete(productId) {
-    const inCart = this.getCartItem(prodct.id)
-    if(!inCart) return this
+    const inCart = this.getCartItem(productId)
+    if (!inCart) return this
 
-    if(this.items.length > 0) {
+    if (this.items.length > 0) {
       this.total.quantity -= inCart.quantity
       this.total.price -= (inCart.product.price * inCart.quantity)
       this.total.formattedPrice = formatPrice(this.total.price)
@@ -87,15 +84,8 @@ const Cart = {
     return this
   },
   getCartItem(productId) {
-    return this.items.find(item => item.product.id == product.id)
-
+    return this.items.find(item => item.product.id == productId)
   }
-}
-
-const product = {
-  id: 1,
-  price: 1.99,
-  quantity: 2
 }
 
 module.exports = Cart
