@@ -3,6 +3,17 @@
 
 {% block content %}
 
+{%if (cart.items) and (cart.items.length < 1)%}
+
+{% call card.render('', 'cart-empty container')%}
+
+<p>Seu carrinho está vazio</p>
+<a href="/products/search" class='button'>Comprar</a>
+
+{%endcall%}
+
+{%else%}
+
 {% call card.render('Carrinho', 'cart container')%}
 
 <div class="header">
@@ -16,7 +27,7 @@
   <div class="item">
     <a href='/products/{{product.id}}'>
       <img src="{{item.product.img}}" alt="Imagem do produto {{item.product.name}}">
-      <span class="title">item.product.name</span>
+      <span class="title">{{item.product.name}}</span>
     </a>
 
     <span class="price">{{item.formattedPrice}}</span>
@@ -49,23 +60,20 @@
     <span>{{cart.total.formattedPrice}}</span>
   </div>
 
+  {% endfor %}
+
   <div class="actions">
-    <a href="/produc/search" class='button shop'>Continuar comprando</a>
+    <a href="/products/search" class='button shop'>Continuar comprando</a>
     <form action="/orders" method='POST'>
       <button class="button order">
         Realizar Pedido
       </button>
     </form>
   </div>
-
-
-  {% endfor %}
-
 </div>
-
 
 {%endcall%}
 
-
+{%endif%}
 
 {% endblock content %}

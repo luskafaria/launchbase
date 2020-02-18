@@ -31,12 +31,26 @@
               <a href="/users/ads">Meus anúncios</a>
             </li>
             <li>
+              <a href="/orders">Meus pedidos</a>
+            </li>
+            <li>
+              <a href="/orders/sales">Minhas vendas</a>
+            </li>
+            <li>
               <form action="users/logout" method='POST'>
                 <button>Sair</button>
               </form>
             </li>
           </ul>
           {% endif %}
+        </li>
+        <li class='cart'>
+        <a href="/cart">
+        <i class="material-icons">shopping_cart</i>
+        {%if (session.cart) and (session.cart.total.quantity > 0) %}
+          <span id="cart-status-info">{{session.cart.total.quantity}}</span>
+        {%endif%}
+        </a>
         </li>
       </ul>
     </nav>
