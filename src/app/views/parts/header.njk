@@ -1,6 +1,10 @@
 <header>
   <div class="container">
     <a href="/">
+      <div class="logo">
+        <h1>Launchstore</h1>
+        <h2>COMPRA & VENDA</h2>
+      </div>
     </a>
 
     <form class="search" method="GET" action="/products/search">
@@ -14,12 +18,12 @@
             <i class="material-icons">add</i>Novo anúncio
           </a>
         </li>
-        <li class="accounts">
+        <li class="dropdown-container">
           <a href="/accounts">
             <i class="material-icons">account_circle</i>Minha Conta
           </a>
           {% if session.userId %}
-          <ul class="submenu">
+          <ul class="dropdown">
             <li>
               <a href="/users">Minha conta</a>
             </li>
